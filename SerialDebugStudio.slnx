@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="SerialDebugStudio.Application/SerialDebugStudio.Application.csproj" />
+  <Project Path="SerialDebugStudio.Desktop/SerialDebugStudio.Desktop.csproj" />
+  <Project Path="SerialDebugStudio.Domain/SerialDebugStudio.Domain.csproj" />
+  <Project Path="SerialDebugStudio.Infrastructure/SerialDebugStudio.Infrastructure.csproj" />
+  <Project Path="SerialDebugStudio.Tests.Integration/SerialDebugStudio.Tests.Integration.csproj" />
+  <Project Path="SerialDebugStudio.Tests.Unit/SerialDebugStudio.Tests.Unit.csproj" />
+</Solution>

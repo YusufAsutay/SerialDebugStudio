@@ -1,12 +1,518 @@
-﻿<Window x:Class="SerialDebugStudio.Desktop.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SerialDebugStudio.Desktop"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+﻿<ui:FluentWindow
+    x:Class="SerialDebugStudio.Desktop.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:domainEnums="clr-namespace:SerialDebugStudio.Domain.Enums;assembly=SerialDebugStudio.Domain"
+    mc:Ignorable="d"
+    Title="Serial Debug Studio"
+    Width="1180"
+    Height="720"
+    MinWidth="960"
+    MinHeight="600"
+    WindowStartupLocation="CenterScreen"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica">
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar
+            Grid.Row="0"
+            Title="Serial Debug Studio" />
+
+        <ScrollViewer
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Auto">
+
+            <Grid Margin="28">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Sayfa başlığı -->
+                <StackPanel Grid.Row="0">
+                    <TextBlock
+                        FontSize="28"
+                        FontWeight="SemiBold"
+                        Text="Seri Port Bağlantısı" />
+
+                    <TextBlock
+                        Margin="0,6,0,0"
+                        FontSize="14"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="COM portunu ve haberleşme parametrelerini yapılandırın." />
+                </StackPanel>
+
+                <!-- Bağlantı kartı -->
+                <ui:Card
+                    Grid.Row="1"
+                    Margin="0,24,0,0"
+                    Padding="22">
+
+                    <StackPanel>
+
+                        <!-- Durum -->
+                        <Grid Margin="8,0,8,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Ellipse
+                                Grid.Column="0"
+                                Width="12"
+                                Height="12"
+                                Margin="0,0,10,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter
+                                            Property="Fill"
+                                            Value="#808080" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ConnectionState}"
+                                                Value="{x:Static domainEnums:ConnectionState.Connecting}">
+                                                <Setter
+                                                    Property="Fill"
+                                                    Value="#F59E0B" />
+                                            </DataTrigger>
+
+                                            <DataTrigger
+                                                Binding="{Binding ConnectionState}"
+                                                Value="{x:Static domainEnums:ConnectionState.Connected}">
+                                                <Setter
+                                                    Property="Fill"
+                                                    Value="#22C55E" />
+                                            </DataTrigger>
+
+                                            <DataTrigger
+                                                Binding="{Binding ConnectionState}"
+                                                Value="{x:Static domainEnums:ConnectionState.Disconnecting}">
+                                                <Setter
+                                                    Property="Fill"
+                                                    Value="#F59E0B" />
+                                            </DataTrigger>
+
+                                            <DataTrigger
+                                                Binding="{Binding ConnectionState}"
+                                                Value="{x:Static domainEnums:ConnectionState.Faulted}">
+                                                <Setter
+                                                    Property="Fill"
+                                                    Value="#EF4444" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Text="{Binding ConnectionStatusText}" />
+                        </Grid>
+
+                        <!-- Seri port ayarları -->
+                        <UniformGrid
+                            Columns="3"
+                            IsEnabled="{Binding CanEditSettings}">
+
+                            <!-- COM port -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="COM Port" />
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ComboBox
+                                        Grid.Column="0"
+                                        MinHeight="36"
+                                        ItemsSource="{Binding AvailablePorts}"
+                                        SelectedItem="{Binding SelectedPort}" />
+
+                                    <ui:Button
+                                        Grid.Column="1"
+                                        MinWidth="82"
+                                        Margin="8,0,0,0"
+                                        Command="{Binding RefreshPortsCommand}"
+                                        Content="Yenile" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Baud rate -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Baud Rate" />
+
+                                <ComboBox
+                                    MinHeight="36"
+                                    ItemsSource="{Binding BaudRates}"
+                                    SelectedItem="{Binding SelectedBaudRate}" />
+                            </StackPanel>
+
+                            <!-- Data bits -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Data Bits" />
+
+                                <ComboBox
+                                    MinHeight="36"
+                                    ItemsSource="{Binding DataBitsOptions}"
+                                    SelectedItem="{Binding SelectedDataBits}" />
+                            </StackPanel>
+
+                            <!-- Parity -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Parity" />
+
+                                <ComboBox
+                                    MinHeight="36"
+                                    ItemsSource="{Binding ParityOptions}"
+                                    SelectedItem="{Binding SelectedParity}" />
+                            </StackPanel>
+
+                            <!-- Stop bits -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Stop Bits" />
+
+                                <ComboBox
+                                    MinHeight="36"
+                                    ItemsSource="{Binding StopBitsOptions}"
+                                    SelectedItem="{Binding SelectedStopBits}" />
+                            </StackPanel>
+
+                            <!-- Flow control -->
+                            <StackPanel Margin="8">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Flow Control" />
+
+                                <ComboBox
+                                    MinHeight="36"
+                                    ItemsSource="{Binding FlowControlOptions}"
+                                    SelectedItem="{Binding SelectedFlowControl}" />
+                            </StackPanel>
+                        </UniformGrid>
+
+                        <!-- Hata mesajı -->
+                        <TextBlock
+                            MinHeight="22"
+                            Margin="8,12,8,0"
+                            Foreground="#EF4444"
+                            TextWrapping="Wrap"
+                            Text="{Binding ConnectionErrorMessage}" />
+
+                        <!-- Open / Close -->
+                        <ui:Button
+                            MinWidth="160"
+                            Height="42"
+                            Margin="8,12,8,0"
+                            HorizontalAlignment="Right"
+                            Appearance="Primary"
+                            Command="{Binding ToggleConnectionCommand}"
+                            Content="{Binding OpenCloseButtonText}" />
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- RX/TX ham trafik alanı -->
+                <ui:Card
+    Grid.Row="2"
+    Margin="0,20,0,0"
+    Padding="22">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Başlık ve sayaçlar -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Text="RX / TX Ham Veri Trafiği" />
+
+                                <TextBlock
+                    Margin="0,6,0,0"
+                  Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Seri porttan gönderilen ve alınan ham byte kayıtları." />
+                            </StackPanel>
+
+                            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal">
+
+                                <!-- RX sayacı -->
+                                <Border
+                    MinWidth="120"
+                    Margin="0,0,8,0"
+                    Padding="14,9"
+                    Background="#1822C55E"
+                    BorderBrush="#5522C55E"
+                    BorderThickness="1"
+                    CornerRadius="8">
+
+                                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+
+                                        <TextBlock
+                            Margin="0,0,8,0"
+                            FontWeight="SemiBold"
+                            Foreground="#4ADE80"
+                            Text="RX" />
+
+                                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{Binding ReceivedByteCount}" />
+
+                                        <TextBlock
+                            Margin="4,0,0,0"
+                           Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                            Text="byte" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- TX sayacı -->
+                                <Border
+                    MinWidth="120"
+                    Padding="14,9"
+                    Background="#183B82F6"
+                    BorderBrush="#553B82F6"
+                    BorderThickness="1"
+                    CornerRadius="8">
+
+                                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+
+                                        <TextBlock
+                            Margin="0,0,8,0"
+                            FontWeight="SemiBold"
+                            Foreground="#60A5FA"
+                            Text="TX" />
+
+                                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{Binding SentByteCount}" />
+
+                                        <TextBlock
+                            Margin="4,0,0,0"
+                           Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                            Text="byte" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- String / HEX gönderim paneli -->
+                        <Grid
+    Grid.Row="1"
+    Margin="0,20,0,14">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Mod ve encoding seçimi -->
+                            <StackPanel
+        Grid.Row="0"
+        Orientation="Horizontal">
+
+                                <!-- String / HEX modu -->
+                                <StackPanel
+            Width="190"
+            Margin="0,0,12,0">
+
+                                    <TextBlock
+                Margin="0,0,0,6"
+                FontWeight="SemiBold"
+                Text="Gönderim Modu" />
+
+                                    <ComboBox
+                MinHeight="36"
+                ItemsSource="{Binding InputModeOptions}"
+                SelectedItem="{Binding SelectedInputMode, Mode=TwoWay}" />
+                                </StackPanel>
+
+                                <!-- Encoding -->
+                                <StackPanel Width="240">
+                                    <TextBlock
+                Margin="0,0,0,6"
+                FontWeight="SemiBold"
+                Text="Encoding" />
+
+                                    <ComboBox
+                MinHeight="36"
+                IsEnabled="{Binding IsEncodingSelectionEnabled}"
+                ItemsSource="{Binding TextEncodingOptions}"
+                SelectedItem="{Binding SelectedTextEncoding, Mode=TwoWay}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Kullanıcı girişi ve düğmeler -->
+                            <Grid
+        Grid.Row="1"
+        Margin="0,14,0,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Veri girişi -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock
+                Margin="0,0,0,6"
+                FontWeight="SemiBold"
+                Text="Gönderilecek Veri" />
+
+                                    <TextBox
+                MinHeight="74"
+                Padding="10"
+                AcceptsReturn="True"
+                TextWrapping="Wrap"
+                VerticalContentAlignment="Top"
+                VerticalScrollBarVisibility="Auto"
+                Text="{Binding SendInput,
+                               Mode=TwoWay,
+                               UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock
+                Margin="0,6,0,0"
+                FontSize="12"
+                Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                Text="Text modunda normal metin; HEX modunda örneğin 01 03 00 00 girin." />
+                                </StackPanel>
+
+                                <!-- Komut düğmeleri -->
+                                <StackPanel
+            Grid.Column="1"
+            Margin="14,25,0,0"
+            VerticalAlignment="Top">
+
+                                    <ui:Button
+                MinWidth="180"
+                Height="36"
+                Appearance="Primary"
+                Command="{Binding SendCommand}"
+                Content="Gönder" />
+
+                                    <ui:Button
+                MinWidth="180"
+                Height="36"
+                Margin="0,10,0,0"
+                Command="{Binding ClearTrafficCommand}"
+                Content="Trafiği Temizle" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Gönderim hatası -->
+                            <TextBlock
+        Grid.Row="2"
+        MinHeight="22"
+        Margin="0,10,0,0"
+        Foreground="#EF4444"
+        TextWrapping="Wrap"
+        Text="{Binding SendErrorMessage}" />
+                        </Grid>
+
+
+
+
+
+
+                        <!-- Trafik tablosu -->
+                        <DataGrid
+            Grid.Row="2"
+            Height="300"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserReorderColumns="False"
+            GridLinesVisibility="Horizontal"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            ItemsSource="{Binding TrafficRows}"
+            SelectionMode="Single">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                    Width="140"
+                    Binding="{Binding TimestampText}"
+                    Header="Zaman" />
+
+                                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding DirectionText}"
+                    Header="Yön" />
+
+                                <DataGridTextColumn
+                    Width="110"
+                    Binding="{Binding TransportKind}"
+                    Header="Taşıyıcı" />
+
+                                <DataGridTextColumn
+                    Width="100"
+                    Binding="{Binding ByteCount}"
+                    Header="Byte" />
+
+                                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding RawByteText}"
+                    Header="Ham Veri" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Bilgilendirme -->
+                        <TextBlock
+            Grid.Row="3"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Right"
+            FontSize="12"
+          Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+            Text="En fazla 2.000 trafik satırı bellekte tutulur." />
+                    </Grid>
+                </ui:Card>
+            </Grid>
+        </ScrollViewer>
     </Grid>
-</Window>
+</ui:FluentWindow>

@@ -4,7 +4,7 @@ public enum TextEncodingKind
 {
     Ascii,
     Utf8,
-    Unicode,
-    BigEndianUnicode,
-    Utf32
+    Utf16LittleEndian,
+    Utf16BigEndian,
+    Utf32LittleEndian
 }

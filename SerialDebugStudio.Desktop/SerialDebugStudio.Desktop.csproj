@@ -26,7 +26,6 @@
     <Folder Include="Resources\" />
     <Folder Include="Services\" />
     <Folder Include="Themes\" />
-    <Folder Include="ViewModels\" />
     <Folder Include="Vİews\" />
   </ItemGroup>
 

@@ -15,4 +15,6 @@ public interface IDataConversionService
     byte[] ParseHex(string hexText);
 
     string FormatHex(ReadOnlySpan<byte> data);
+
+
 }

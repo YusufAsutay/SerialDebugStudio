@@ -175,5 +175,91 @@ public sealed class DataConversionService
             DecoderFallback.ExceptionFallback;
 
         return result;
+        public byte[] ParseBinary(string binaryText)
+{
+    if (string.IsNullOrWhiteSpace(binaryText))
+    {
+        throw new FormatException(
+            "Binary veri boş olamaz.");
+    }
+
+    var normalizedBuilder =
+        new StringBuilder(binaryText.Length);
+
+    foreach (char character in binaryText)
+    {
+        if (char.IsWhiteSpace(character))
+        {
+            continue;
+        }
+
+        if (character is not ('0' or '1'))
+        {
+            throw new FormatException(
+                $"Binary veri yalnızca 0 ve 1 içerebilir. " +
+                $"Geçersiz karakter: '{character}'");
+        }
+
+        normalizedBuilder.Append(character);
+    }
+
+    string normalized =
+        normalizedBuilder.ToString();
+
+    if (normalized.Length % 8 != 0)
+    {
+        throw new FormatException(
+            "Binary veride her byte tam olarak 8 bit olmalıdır.");
+    }
+
+    var result =
+        new byte[normalized.Length / 8];
+
+    for (int byteIndex = 0;
+         byteIndex < result.Length;
+         byteIndex++)
+    {
+        string byteText =
+            normalized.Substring(
+                byteIndex * 8,
+                8);
+
+        result[byteIndex] =
+            Convert.ToByte(byteText, 2);
+    }
+
+    return result;
+}
+
+public string FormatBinary(
+    ReadOnlySpan<byte> data)
+{
+    if (data.IsEmpty)
+    {
+        return string.Empty;
+    }
+
+    var result =
+        new StringBuilder(data.Length * 9);
+
+    for (int index = 0;
+         index < data.Length;
+         index++)
+    {
+        if (index > 0)
+        {
+            result.Append(' ');
+        }
+
+        result.Append(
+            Convert
+                .ToString(data[index], 2)
+                .PadLeft(8, '0'));
+    }
+
+    return result.ToString();
+}
+
+
     }
 }

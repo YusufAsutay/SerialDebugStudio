@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:enums="clr-namespace:SerialDebugStudio.Domain.Enums;assembly=SerialDebugStudio.Domain"
     xmlns:domainEnums="clr-namespace:SerialDebugStudio.Domain.Enums;assembly=SerialDebugStudio.Domain"
     mc:Ignorable="d"
     Title="Serial Debug Studio"
@@ -341,7 +342,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- String / HEX gönderim paneli -->
+                        <!-- Veri gönderim paneli -->
                         <Grid
     Grid.Row="1"
     Margin="0,20,0,14">
@@ -350,47 +351,125 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- Mod ve encoding seçimi -->
+                            <!-- Mod, encoding ve satır sonu seçimi -->
                             <StackPanel
-        Grid.Row="0"
-        Orientation="Horizontal">
+    Grid.Row="0"
+    Orientation="Horizontal">
 
-                                <!-- String / HEX modu -->
+                                <!-- Gönderim modu -->
                                 <StackPanel
-            Width="190"
-            Margin="0,0,12,0">
+        Width="190"
+        Margin="0,0,12,0">
 
                                     <TextBlock
-                Margin="0,0,0,6"
-                FontWeight="SemiBold"
-                Text="Gönderim Modu" />
+            Margin="0,0,0,6"
+            FontWeight="SemiBold"
+            Text="Gönderim Modu" />
 
                                     <ComboBox
-                MinHeight="36"
-                ItemsSource="{Binding InputModeOptions}"
-                SelectedItem="{Binding SelectedInputMode, Mode=TwoWay}" />
+            MinHeight="36"
+            ItemsSource="{Binding InputModeOptions}"
+            SelectedItem="{Binding SelectedInputMode, Mode=TwoWay}" />
                                 </StackPanel>
 
                                 <!-- Encoding -->
-                                <StackPanel Width="240">
+                                <StackPanel
+        Width="240"
+        Margin="0,0,12,0">
+
                                     <TextBlock
-                Margin="0,0,0,6"
-                FontWeight="SemiBold"
-                Text="Encoding" />
+            Margin="0,0,0,6"
+            FontWeight="SemiBold"
+            Text="Encoding" />
 
                                     <ComboBox
-                MinHeight="36"
-                IsEnabled="{Binding IsEncodingSelectionEnabled}"
-                ItemsSource="{Binding TextEncodingOptions}"
-                SelectedItem="{Binding SelectedTextEncoding, Mode=TwoWay}" />
+            MinHeight="36"
+            IsEnabled="{Binding IsEncodingSelectionEnabled}"
+            ItemsSource="{Binding TextEncodingOptions}"
+            SelectedItem="{Binding SelectedTextEncoding, Mode=TwoWay}" />
+                                </StackPanel>
+
+                                <!-- Satır sonu -->
+                                <StackPanel Width="190">
+                                    <TextBlock
+            Margin="0,0,0,6"
+            FontWeight="SemiBold"
+            Text="Satır Sonu" />
+
+                                    <ComboBox
+            MinHeight="36"
+            IsEnabled="{Binding IsLineEndingSelectionEnabled}"
+            ItemsSource="{Binding LineEndingOptions}"
+            SelectedItem="{Binding SelectedLineEnding,
+                                   Mode=TwoWay,
+                                   UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </StackPanel>
+
+
+                            <!-- Number modu ayarları -->
+                            <StackPanel
+                                Grid.Row="1"
+                                Margin="0,12,0,0"
+                                Orientation="Horizontal">
+
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter
+                                            Property="Visibility"
+                                            Value="Collapsed" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding SelectedInputMode}"
+                                                Value="{x:Static enums:DataInputMode.Number}">
+                                                <Setter
+                                                    Property="Visibility"
+                                                    Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <!-- Sayısal veri tipi -->
+                                <StackPanel
+                                    Width="190"
+                                    Margin="0,0,12,0">
+                                    <TextBlock
+                                        Margin="0,0,0,6"
+                                        FontWeight="SemiBold"
+                                        Text="Sayısal Veri Tipi" />
+
+                                    <ComboBox
+                                        MinHeight="36"
+                                        ItemsSource="{Binding NumericDataTypes}"
+                                        SelectedItem="{Binding SelectedNumericDataType,
+                                                               Mode=TwoWay,
+                                                               UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <!-- Byte sırası -->
+                                <StackPanel Width="190">
+                                    <TextBlock
+                                        Margin="0,0,0,6"
+                                        FontWeight="SemiBold"
+                                        Text="Byte Sırası" />
+
+                                    <ComboBox
+                                        MinHeight="36"
+                                        ItemsSource="{Binding ByteOrders}"
+                                        SelectedItem="{Binding SelectedByteOrder,
+                                                               Mode=TwoWay,
+                                                               UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                             </StackPanel>
 
                             <!-- Kullanıcı girişi ve düğmeler -->
                             <Grid
-        Grid.Row="1"
+        Grid.Row="2"
         Margin="0,14,0,0">
 
                                 <Grid.ColumnDefinitions>
@@ -420,7 +499,8 @@
                 Margin="0,6,0,0"
                 FontSize="12"
                 Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-                Text="Text modunda normal metin; HEX modunda örneğin 01 03 00 00 girin." />
+                TextWrapping="Wrap"
+                Text="Text modunda isteğe bağlı CR, LF veya CRLF eklenebilir; HEX modunda byte değerleri; Binary modunda 8 bitlik gruplar; Number modunda yalnızca sayısal değer girin." />
                                 </StackPanel>
 
                                 <!-- Komut düğmeleri -->
@@ -447,7 +527,7 @@
 
                             <!-- Gönderim hatası -->
                             <TextBlock
-        Grid.Row="2"
+        Grid.Row="3"
         MinHeight="22"
         Margin="0,10,0,0"
         Foreground="#EF4444"

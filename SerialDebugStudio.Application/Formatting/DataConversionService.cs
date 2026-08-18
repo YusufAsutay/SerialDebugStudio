@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Buffers.Binary;
 using System.Text;
 using SerialDebugStudio.Application.Abstractions.Formatting;
 using SerialDebugStudio.Domain.Enums;
@@ -163,7 +164,7 @@ public sealed class DataConversionService
     }
 
     private static Encoding CreateStrictEncoding(
-        Encoding source)
+     Encoding source)
     {
         var result =
             (Encoding)source.Clone();
@@ -175,91 +176,257 @@ public sealed class DataConversionService
             DecoderFallback.ExceptionFallback;
 
         return result;
-        public byte[] ParseBinary(string binaryText)
-{
-    if (string.IsNullOrWhiteSpace(binaryText))
-    {
-        throw new FormatException(
-            "Binary veri boş olamaz.");
     }
 
-    var normalizedBuilder =
-        new StringBuilder(binaryText.Length);
-
-    foreach (char character in binaryText)
+    public byte[] ParseBinary(string binaryText)
     {
-        if (char.IsWhiteSpace(character))
-        {
-            continue;
-        }
-
-        if (character is not ('0' or '1'))
+        if (string.IsNullOrWhiteSpace(binaryText))
         {
             throw new FormatException(
-                $"Binary veri yalnızca 0 ve 1 içerebilir. " +
-                $"Geçersiz karakter: '{character}'");
+                "Binary veri boş olamaz.");
         }
 
-        normalizedBuilder.Append(character);
-    }
+        var normalizedBuilder =
+            new StringBuilder(binaryText.Length);
 
-    string normalized =
-        normalizedBuilder.ToString();
-
-    if (normalized.Length % 8 != 0)
-    {
-        throw new FormatException(
-            "Binary veride her byte tam olarak 8 bit olmalıdır.");
-    }
-
-    var result =
-        new byte[normalized.Length / 8];
-
-    for (int byteIndex = 0;
-         byteIndex < result.Length;
-         byteIndex++)
-    {
-        string byteText =
-            normalized.Substring(
-                byteIndex * 8,
-                8);
-
-        result[byteIndex] =
-            Convert.ToByte(byteText, 2);
-    }
-
-    return result;
-}
-
-public string FormatBinary(
-    ReadOnlySpan<byte> data)
-{
-    if (data.IsEmpty)
-    {
-        return string.Empty;
-    }
-
-    var result =
-        new StringBuilder(data.Length * 9);
-
-    for (int index = 0;
-         index < data.Length;
-         index++)
-    {
-        if (index > 0)
+        foreach (char character in binaryText)
         {
-            result.Append(' ');
+            if (char.IsWhiteSpace(character))
+            {
+                continue;
+            }
+
+            if (character is not ('0' or '1'))
+            {
+                throw new FormatException(
+                    $"Binary veri yalnızca 0 ve 1 içerebilir. " +
+                    $"Geçersiz karakter: '{character}'");
+            }
+
+            normalizedBuilder.Append(character);
         }
 
-        result.Append(
-            Convert
-                .ToString(data[index], 2)
-                .PadLeft(8, '0'));
+        string normalized =
+            normalizedBuilder.ToString();
+
+        if (normalized.Length % 8 != 0)
+        {
+            throw new FormatException(
+                "Binary veride her byte tam olarak 8 bit olmalıdır.");
+        }
+
+        var result =
+            new byte[normalized.Length / 8];
+
+        for (int byteIndex = 0;
+             byteIndex < result.Length;
+             byteIndex++)
+        {
+            string byteText =
+                normalized.Substring(
+                    byteIndex * 8,
+                    8);
+
+            result[byteIndex] =
+                Convert.ToByte(byteText, 2);
+        }
+
+        return result;
     }
 
-    return result.ToString();
-}
+    public string FormatBinary(
+        ReadOnlySpan<byte> data)
+    {
+        if (data.IsEmpty)
+        {
+            return string.Empty;
+        }
 
+        var result =
+            new StringBuilder(data.Length * 9);
 
+        for (int index = 0;
+             index < data.Length;
+             index++)
+        {
+            if (index > 0)
+            {
+                result.Append(' ');
+            }
+
+            result.Append(
+                Convert
+                    .ToString(data[index], 2)
+                    .PadLeft(8, '0'));
+        }
+
+        return result.ToString();
+    }
+
+    public byte[] ParseIeee754(
+     string numericText,
+     NumericDataType numericDataType,
+     ByteOrder byteOrder)
+    {
+        ArgumentNullException.ThrowIfNull(numericText);
+
+        return numericDataType switch
+        {
+            NumericDataType.Float32 =>
+                ParseFloat32(numericText, byteOrder),
+
+            NumericDataType.Float64 =>
+                ParseFloat64(numericText, byteOrder),
+
+            _ =>
+                throw new ArgumentOutOfRangeException(
+                    nameof(numericDataType),
+                    numericDataType,
+                    "Desteklenmeyen sayısal veri tipi.")
+        };
+    }
+
+    private static byte[] ParseFloat32(
+    string numericText,
+    ByteOrder byteOrder)
+    {
+        string normalizedText = numericText
+            .Trim()
+            .Replace(',', '.');
+
+        if (string.IsNullOrWhiteSpace(normalizedText))
+        {
+            throw new FormatException(
+                "Float32 değeri boş bırakılamaz.");
+        }
+
+        if (!float.TryParse(
+                normalizedText,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out float value))
+        {
+            throw new FormatException(
+                "Geçerli bir Float32 değeri girin.");
+        }
+
+        if (float.IsNaN(value))
+        {
+            throw new FormatException(
+                "NaN değeri gönderilemez.");
+        }
+
+        if (float.IsInfinity(value))
+        {
+            throw new OverflowException(
+                "Girilen değer Float32 aralığının dışındadır.");
+        }
+
+        byte[] data = new byte[sizeof(float)];
+
+        switch (byteOrder)
+        {
+            case ByteOrder.LittleEndian:
+                BinaryPrimitives.WriteSingleLittleEndian(
+                    data,
+                    value);
+                break;
+
+            case ByteOrder.BigEndian:
+                BinaryPrimitives.WriteSingleBigEndian(
+                    data,
+                    value);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(byteOrder),
+                    byteOrder,
+                    "Desteklenmeyen byte sırası.");
+        }
+
+        return data;
+    }
+
+    private static byte[] ParseFloat64(
+    string numericText,
+    ByteOrder byteOrder)
+    {
+        string normalizedText = numericText
+            .Trim()
+            .Replace(',', '.');
+
+        if (string.IsNullOrWhiteSpace(normalizedText))
+        {
+            throw new FormatException(
+                "Float64 değeri boş bırakılamaz.");
+        }
+
+        if (!double.TryParse(
+                normalizedText,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out double value))
+        {
+            throw new FormatException(
+                "Geçerli bir Float64 değeri girin.");
+        }
+
+        if (double.IsNaN(value))
+        {
+            throw new FormatException(
+                "NaN değeri gönderilemez.");
+        }
+
+        if (double.IsInfinity(value))
+        {
+            throw new OverflowException(
+                "Girilen değer Float64 aralığının dışındadır.");
+        }
+
+        byte[] data = new byte[sizeof(double)];
+
+        switch (byteOrder)
+        {
+            case ByteOrder.LittleEndian:
+                BinaryPrimitives.WriteDoubleLittleEndian(
+                    data,
+                    value);
+                break;
+
+            case ByteOrder.BigEndian:
+                BinaryPrimitives.WriteDoubleBigEndian(
+                    data,
+                    value);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(byteOrder),
+                    byteOrder,
+                    "Desteklenmeyen byte sırası.");
+        }
+
+        return data;
+    }
+
+    public string ApplyLineEnding(
+     string text,
+     LineEnding lineEnding)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+
+        return lineEnding switch
+        {
+            LineEnding.None => text,
+            LineEnding.CR => text + "\r",
+            LineEnding.LF => text + "\n",
+            LineEnding.CRLF => text + "\r\n",
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(lineEnding),
+                lineEnding,
+                "Desteklenmeyen satır sonu seçimi.")
+        };
     }
 }

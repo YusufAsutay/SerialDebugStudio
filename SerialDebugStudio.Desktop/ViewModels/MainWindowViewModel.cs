@@ -6,6 +6,7 @@ using SerialDebugStudio.Desktop.Models;
 using SerialDebugStudio.Domain.Enums;
 using SerialDebugStudio.Domain.Models;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
 
@@ -102,6 +103,24 @@ public partial class MainWindowViewModel
         get;
     } = Enum.GetValues<TextEncodingKind>();
 
+
+    public IReadOnlyList<NumericDataType> NumericDataTypes { get; } =
+    Enum.GetValues<NumericDataType>();
+
+    public IReadOnlyList<ByteOrder> ByteOrders { get; } =
+        Enum.GetValues<ByteOrder>();
+
+    public IReadOnlyList<LineEnding> LineEndingOptions { get; } =
+    Enum.GetValues<LineEnding>();
+
+    [ObservableProperty]
+    private NumericDataType _selectedNumericDataType =
+    NumericDataType.Float32;
+
+    [ObservableProperty]
+    private ByteOrder _selectedByteOrder =
+    ByteOrder.BigEndian;
+
     [ObservableProperty]
     private string? selectedPort;
 
@@ -139,6 +158,8 @@ public partial class MainWindowViewModel
     private long sentByteCount;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(
+        nameof(IsLineEndingSelectionEnabled))]
     private DataInputMode selectedInputMode =
         DataInputMode.Text;
 
@@ -154,6 +175,11 @@ public partial class MainWindowViewModel
     private string sendErrorMessage =
         string.Empty;
 
+    [ObservableProperty]
+    private LineEnding _selectedLineEnding =
+    LineEnding.None;
+
+
     public bool IsEncodingSelectionEnabled =>
         SelectedInputMode == DataInputMode.Text;
 
@@ -161,6 +187,11 @@ public partial class MainWindowViewModel
         ConnectionState is
             ConnectionState.Disconnected or
             ConnectionState.Faulted;
+
+    public bool IsLineEndingSelectionEnabled =>
+               SelectedInputMode == DataInputMode.Text;
+
+
 
     public string ConnectionStatusText =>
         ConnectionState switch
@@ -362,22 +393,31 @@ public partial class MainWindowViewModel
         try
         {
             byte[] data =
-                SelectedInputMode switch
-                {
-                    DataInputMode.Text =>
-                        _dataConversionService.EncodeText(
-                            SendInput,
-                            SelectedTextEncoding),
+    SelectedInputMode switch
+    {
+        DataInputMode.Text =>
+                BuildTextPayload(),
 
-                    DataInputMode.Hex =>
-                        _dataConversionService.ParseHex(
-                            SendInput),
+        DataInputMode.Hex =>
+            _dataConversionService.ParseHex(
+                SendInput),
 
-                    _ => throw new ArgumentOutOfRangeException(
-                        nameof(SelectedInputMode),
-                        SelectedInputMode,
-                        "Desteklenmeyen giriş modu.")
-                };
+        DataInputMode.Binary =>
+            _dataConversionService.ParseBinary(
+                SendInput),
+
+
+        DataInputMode.Number =>
+            _dataConversionService.ParseIeee754(    
+                SendInput,
+                SelectedNumericDataType,
+                SelectedByteOrder),
+
+        _ => throw new ArgumentOutOfRangeException(
+            nameof(SelectedInputMode),
+            SelectedInputMode,
+            "Desteklenmeyen giriş modu.")
+    };
 
             if (data.Length == 0)
             {
@@ -410,7 +450,20 @@ public partial class MainWindowViewModel
         catch (FormatException exception)
         {
             SendErrorMessage =
-                $"Geçersiz HEX girişi: {exception.Message}";
+                SelectedInputMode switch
+                {
+                    DataInputMode.Hex =>
+                        $"Geçersiz HEX girişi: {exception.Message}",
+
+                    DataInputMode.Binary =>
+                        $"Geçersiz Binary girişi: {exception.Message}",
+
+                    DataInputMode.Number =>
+                        $"Geçersiz IEEE 754 değeri: {exception.Message}",
+
+                    _ =>
+                        $"Geçersiz veri: {exception.Message}"
+                };
         }
         catch (EncoderFallbackException exception)
         {
@@ -560,6 +613,21 @@ public partial class MainWindowViewModel
                 }
             });
     }
+
+    private byte[] BuildTextPayload()
+    {
+        string textWithLineEnding =
+            _dataConversionService.ApplyLineEnding(
+                SendInput,
+                SelectedLineEnding);
+
+        return _dataConversionService.EncodeText(
+            textWithLineEnding,
+            SelectedTextEncoding);
+    }
+
+
+
 
     private void OnTransportDataReceived(
         object? sender,

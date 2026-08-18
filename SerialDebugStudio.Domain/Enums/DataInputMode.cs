@@ -4,5 +4,6 @@ public enum DataInputMode
 {
     Text,
     Hex,
-    Binary
+    Binary,
+    Number
 }

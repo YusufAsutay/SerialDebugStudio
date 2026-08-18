@@ -16,5 +16,18 @@ public interface IDataConversionService
 
     string FormatHex(ReadOnlySpan<byte> data);
 
+    byte[] ParseBinary(string binaryText);
+
+    string FormatBinary(ReadOnlySpan<byte> data);
+
+    byte[] ParseIeee754(
+    string numericText,
+    NumericDataType numericDataType,
+    ByteOrder byteOrder);
+
+    string ApplyLineEnding(
+    string text,
+    LineEnding lineEnding);
+
 
 }

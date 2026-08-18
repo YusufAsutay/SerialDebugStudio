@@ -43,4 +43,5 @@ public sealed class RawTrafficRow
             " ",
             _data.Select(
                 value => value.ToString("X2")));
-}
+}  
+

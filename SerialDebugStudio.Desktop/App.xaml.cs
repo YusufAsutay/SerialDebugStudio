@@ -5,6 +5,8 @@ using SerialDebugStudio.Desktop.ViewModels;
 using SerialDebugStudio.Infrastructure.Transports.Serial;
 using SerialDebugStudio.Application.Abstractions.Formatting;
 using SerialDebugStudio.Application.Services.Formatting;
+using SerialDebugStudio.Application.Abstractions.Checksums;
+using SerialDebugStudio.Application.Services.Checksums;
 
 namespace SerialDebugStudio.Desktop;
 
@@ -23,6 +25,10 @@ public partial class App : System.Windows.Application
         builder.Services.AddSingleton<
             IDataConversionService,
             DataConversionService>();
+
+        builder.Services.AddSingleton<
+            IChecksumService, 
+            ChecksumService>();
 
         builder.Services.AddSingleton<
             ISerialPortDiscoveryService,

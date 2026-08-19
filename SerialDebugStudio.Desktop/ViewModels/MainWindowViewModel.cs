@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SerialDebugStudio.Application.Abstractions.Checksums;
 using SerialDebugStudio.Application.Abstractions.Formatting;
 using SerialDebugStudio.Application.Abstractions.Transports;
 using SerialDebugStudio.Desktop.Models;
 using SerialDebugStudio.Domain.Enums;
 using SerialDebugStudio.Domain.Models;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Text;
 
@@ -26,13 +27,31 @@ public partial class MainWindowViewModel
     private readonly IDataConversionService
         _dataConversionService;
 
+
+    private readonly IChecksumService
+        _checksumService;
+
+
     private ITransport? _transport;
 
     public MainWindowViewModel(
      ISerialPortDiscoveryService serialPortDiscoveryService,
      ISerialTransportFactory serialTransportFactory,
-     IDataConversionService dataConversionService)
+     IDataConversionService dataConversionService,
+     IChecksumService checksumService)
     {
+        ArgumentNullException.ThrowIfNull(
+            serialPortDiscoveryService);
+
+        ArgumentNullException.ThrowIfNull(
+            serialTransportFactory);
+
+        ArgumentNullException.ThrowIfNull(
+            dataConversionService);
+
+        ArgumentNullException.ThrowIfNull(
+            checksumService);
+
         _serialPortDiscoveryService =
             serialPortDiscoveryService;
 
@@ -41,6 +60,9 @@ public partial class MainWindowViewModel
 
         _dataConversionService =
             dataConversionService;
+
+        _checksumService =
+            checksumService;
 
         RefreshPorts();
     }
@@ -113,6 +135,14 @@ public partial class MainWindowViewModel
     public IReadOnlyList<LineEnding> LineEndingOptions { get; } =
     Enum.GetValues<LineEnding>();
 
+
+    public IReadOnlyList<ChecksumAlgorithm>
+    ChecksumAlgorithmOptions
+    {
+        get;
+    } = Enum.GetValues<ChecksumAlgorithm>();
+
+
     [ObservableProperty]
     private NumericDataType _selectedNumericDataType =
     NumericDataType.Float32;
@@ -160,6 +190,8 @@ public partial class MainWindowViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(
         nameof(IsLineEndingSelectionEnabled))]
+    [NotifyPropertyChangedFor(
+        nameof(IsChecksumSelectionEnabled))]
     private DataInputMode selectedInputMode =
         DataInputMode.Text;
 
@@ -180,6 +212,11 @@ public partial class MainWindowViewModel
     LineEnding.None;
 
 
+    [ObservableProperty]
+    private ChecksumAlgorithm selectedChecksumAlgorithm =
+    ChecksumAlgorithm.None;
+
+
     public bool IsEncodingSelectionEnabled =>
         SelectedInputMode == DataInputMode.Text;
 
@@ -189,7 +226,12 @@ public partial class MainWindowViewModel
             ConnectionState.Faulted;
 
     public bool IsLineEndingSelectionEnabled =>
-               SelectedInputMode == DataInputMode.Text;
+        SelectedInputMode == DataInputMode.Text;
+
+    public bool IsChecksumSelectionEnabled =>
+        SelectedInputMode is
+            DataInputMode.Hex or
+            DataInputMode.Binary;
 
 
 
@@ -392,40 +434,46 @@ public partial class MainWindowViewModel
 
         try
         {
-            byte[] data =
-    SelectedInputMode switch
-    {
-        DataInputMode.Text =>
-                BuildTextPayload(),
+            byte[] payload =
+                SelectedInputMode switch
+                {
+                    DataInputMode.Text =>
+                        BuildTextPayload(),
 
-        DataInputMode.Hex =>
-            _dataConversionService.ParseHex(
-                SendInput),
+                    DataInputMode.Hex =>
+                        _dataConversionService.ParseHex(
+                            SendInput),
 
-        DataInputMode.Binary =>
-            _dataConversionService.ParseBinary(
-                SendInput),
+                    DataInputMode.Binary =>
+                        _dataConversionService.ParseBinary(
+                            SendInput),
 
+                    DataInputMode.Number =>
+                        _dataConversionService.ParseIeee754(
+                            SendInput,
+                            SelectedNumericDataType,
+                            SelectedByteOrder),
 
-        DataInputMode.Number =>
-            _dataConversionService.ParseIeee754(    
-                SendInput,
-                SelectedNumericDataType,
-                SelectedByteOrder),
+                    _ => throw new ArgumentOutOfRangeException(
+                        nameof(SelectedInputMode),
+                        SelectedInputMode,
+                        "Desteklenmeyen giriş modu.")
+                };
 
-        _ => throw new ArgumentOutOfRangeException(
-            nameof(SelectedInputMode),
-            SelectedInputMode,
-            "Desteklenmeyen giriş modu.")
-    };
-
-            if (data.Length == 0)
+            if (payload.Length == 0)
             {
                 SendErrorMessage =
                     "Gönderilecek veri boş olamaz.";
 
                 return;
             }
+
+            byte[] data =
+                IsChecksumSelectionEnabled
+                    ? _checksumService.Append(
+                        payload,
+                        SelectedChecksumAlgorithm)
+                    : payload;
 
             await transport.SendAsync(data);
 
@@ -708,6 +756,12 @@ public partial class MainWindowViewModel
 
     partial void OnSelectedTextEncodingChanged(
         TextEncodingKind value)
+    {
+        SendErrorMessage = string.Empty;
+    }
+
+    partial void OnSelectedChecksumAlgorithmChanged(
+        ChecksumAlgorithm value)
     {
         SendErrorMessage = string.Empty;
     }

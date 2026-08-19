@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:enums="clr-namespace:SerialDebugStudio.Domain.Enums;assembly=SerialDebugStudio.Domain"
     xmlns:domainEnums="clr-namespace:SerialDebugStudio.Domain.Enums;assembly=SerialDebugStudio.Domain"
     mc:Ignorable="d"
     Title="Serial Debug Studio"
@@ -354,7 +353,7 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- Mod, encoding ve satır sonu seçimi -->
+                            <!-- Mod, encoding, satır sonu ve checksum seçimi -->
                             <StackPanel
     Grid.Row="0"
     Orientation="Horizontal">
@@ -393,7 +392,10 @@
                                 </StackPanel>
 
                                 <!-- Satır sonu -->
-                                <StackPanel Width="190">
+                                <StackPanel
+        Width="190"
+        Margin="0,0,12,0">
+
                                     <TextBlock
             Margin="0,0,0,6"
             FontWeight="SemiBold"
@@ -404,6 +406,22 @@
             IsEnabled="{Binding IsLineEndingSelectionEnabled}"
             ItemsSource="{Binding LineEndingOptions}"
             SelectedItem="{Binding SelectedLineEnding,
+                                   Mode=TwoWay,
+                                   UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <!-- Checksum / CRC -->
+                                <StackPanel Width="210">
+                                    <TextBlock
+            Margin="0,0,0,6"
+            FontWeight="SemiBold"
+            Text="Checksum / CRC" />
+
+                                    <ComboBox
+            MinHeight="36"
+            IsEnabled="{Binding IsChecksumSelectionEnabled}"
+            ItemsSource="{Binding ChecksumAlgorithmOptions}"
+            SelectedItem="{Binding SelectedChecksumAlgorithm,
                                    Mode=TwoWay,
                                    UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
@@ -425,7 +443,7 @@
                                         <Style.Triggers>
                                             <DataTrigger
                                                 Binding="{Binding SelectedInputMode}"
-                                                Value="{x:Static enums:DataInputMode.Number}">
+                                                Value="{x:Static domainEnums:DataInputMode.Number}">
                                                 <Setter
                                                     Property="Visibility"
                                                     Value="Visible" />
@@ -500,7 +518,7 @@
                 FontSize="12"
                 Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                 TextWrapping="Wrap"
-                Text="Text modunda isteğe bağlı CR, LF veya CRLF eklenebilir; HEX modunda byte değerleri; Binary modunda 8 bitlik gruplar; Number modunda yalnızca sayısal değer girin." />
+                Text="Text modunda CR, LF veya CRLF kullanılabilir; HEX ve Binary modlarında isteğe bağlı SUM8 veya CRC-16 Modbus eklenebilir; Number modunda yalnızca sayısal değer girin." />
                                 </StackPanel>
 
                                 <!-- Komut düğmeleri -->

@@ -3,8 +3,5 @@
 public enum TransportKind
 {
     Serial,
-    TcpClient,
-    TcpServer,
-    UdpClient,
-    UdpServer
+    Udp
 }

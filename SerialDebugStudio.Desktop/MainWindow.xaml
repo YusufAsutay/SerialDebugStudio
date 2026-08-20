@@ -26,211 +26,215 @@
             Grid.Row="0"
             Title="Serial Debug Studio" />
 
-        <ScrollViewer
+        <TabControl
             Grid.Row="1"
-            VerticalScrollBarVisibility="Auto">
+            Margin="18,12,18,18">
 
-            <Grid Margin="28">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+            <TabItem Header="Serial">
+                <ScrollViewer
+                    VerticalScrollBarVisibility="Auto">
 
-                <!-- Sayfa başlığı -->
-                <StackPanel Grid.Row="0">
-                    <TextBlock
+                    <Grid Margin="28">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Sayfa başlığı -->
+                        <StackPanel Grid.Row="0">
+                            <TextBlock
                         FontSize="28"
                         FontWeight="SemiBold"
                         Text="Seri Port Bağlantısı" />
 
-                    <TextBlock
+                            <TextBlock
                         Margin="0,6,0,0"
                         FontSize="14"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="COM portunu ve haberleşme parametrelerini yapılandırın." />
-                </StackPanel>
+                        </StackPanel>
 
-                <!-- Bağlantı kartı -->
-                <ui:Card
+                        <!-- Bağlantı kartı -->
+                        <ui:Card
                     Grid.Row="1"
                     Margin="0,24,0,0"
                     Padding="22">
 
-                    <StackPanel>
+                            <StackPanel>
 
-                        <!-- Durum -->
-                        <Grid Margin="8,0,8,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                                <!-- Durum -->
+                                <Grid Margin="8,0,8,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Ellipse
+                                    <Ellipse
                                 Grid.Column="0"
                                 Width="12"
                                 Height="12"
                                 Margin="0,0,10,0">
-                                <Ellipse.Style>
-                                    <Style TargetType="Ellipse">
-                                        <Setter
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter
                                             Property="Fill"
                                             Value="#808080" />
 
-                                        <Style.Triggers>
-                                            <DataTrigger
+                                                <Style.Triggers>
+                                                    <DataTrigger
                                                 Binding="{Binding ConnectionState}"
                                                 Value="{x:Static domainEnums:ConnectionState.Connecting}">
-                                                <Setter
+                                                        <Setter
                                                     Property="Fill"
                                                     Value="#F59E0B" />
-                                            </DataTrigger>
+                                                    </DataTrigger>
 
-                                            <DataTrigger
+                                                    <DataTrigger
                                                 Binding="{Binding ConnectionState}"
                                                 Value="{x:Static domainEnums:ConnectionState.Connected}">
-                                                <Setter
+                                                        <Setter
                                                     Property="Fill"
                                                     Value="#22C55E" />
-                                            </DataTrigger>
+                                                    </DataTrigger>
 
-                                            <DataTrigger
+                                                    <DataTrigger
                                                 Binding="{Binding ConnectionState}"
                                                 Value="{x:Static domainEnums:ConnectionState.Disconnecting}">
-                                                <Setter
+                                                        <Setter
                                                     Property="Fill"
                                                     Value="#F59E0B" />
-                                            </DataTrigger>
+                                                    </DataTrigger>
 
-                                            <DataTrigger
+                                                    <DataTrigger
                                                 Binding="{Binding ConnectionState}"
                                                 Value="{x:Static domainEnums:ConnectionState.Faulted}">
-                                                <Setter
+                                                        <Setter
                                                     Property="Fill"
                                                     Value="#EF4444" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Ellipse.Style>
-                            </Ellipse>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
 
-                            <TextBlock
+                                    <TextBlock
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
                                 FontSize="14"
                                 FontWeight="SemiBold"
                                 Text="{Binding ConnectionStatusText}" />
-                        </Grid>
+                                </Grid>
 
-                        <!-- Seri port ayarları -->
-                        <UniformGrid
+                                <!-- Seri port ayarları -->
+                                <UniformGrid
                             Columns="3"
                             IsEnabled="{Binding CanEditSettings}">
 
-                            <!-- COM port -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- COM port -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="COM Port" />
 
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
 
-                                    <ComboBox
+                                            <ComboBox
                                         Grid.Column="0"
                                         MinHeight="36"
                                         ItemsSource="{Binding AvailablePorts}"
                                         SelectedItem="{Binding SelectedPort}" />
 
-                                    <ui:Button
+                                            <ui:Button
                                         Grid.Column="1"
                                         MinWidth="82"
                                         Margin="8,0,0,0"
                                         Command="{Binding RefreshPortsCommand}"
                                         Content="Yenile" />
-                                </Grid>
-                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
 
-                            <!-- Baud rate -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- Baud rate -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="Baud Rate" />
 
-                                <ComboBox
+                                        <ComboBox
                                     MinHeight="36"
                                     ItemsSource="{Binding BaudRates}"
                                     SelectedItem="{Binding SelectedBaudRate}" />
-                            </StackPanel>
+                                    </StackPanel>
 
-                            <!-- Data bits -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- Data bits -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="Data Bits" />
 
-                                <ComboBox
+                                        <ComboBox
                                     MinHeight="36"
                                     ItemsSource="{Binding DataBitsOptions}"
                                     SelectedItem="{Binding SelectedDataBits}" />
-                            </StackPanel>
+                                    </StackPanel>
 
-                            <!-- Parity -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- Parity -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="Parity" />
 
-                                <ComboBox
+                                        <ComboBox
                                     MinHeight="36"
                                     ItemsSource="{Binding ParityOptions}"
                                     SelectedItem="{Binding SelectedParity}" />
-                            </StackPanel>
+                                    </StackPanel>
 
-                            <!-- Stop bits -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- Stop bits -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="Stop Bits" />
 
-                                <ComboBox
+                                        <ComboBox
                                     MinHeight="36"
                                     ItemsSource="{Binding StopBitsOptions}"
                                     SelectedItem="{Binding SelectedStopBits}" />
-                            </StackPanel>
+                                    </StackPanel>
 
-                            <!-- Flow control -->
-                            <StackPanel Margin="8">
-                                <TextBlock
+                                    <!-- Flow control -->
+                                    <StackPanel Margin="8">
+                                        <TextBlock
                                     Margin="0,0,0,6"
                                     FontWeight="SemiBold"
                                     Text="Flow Control" />
 
-                                <ComboBox
+                                        <ComboBox
                                     MinHeight="36"
                                     ItemsSource="{Binding FlowControlOptions}"
                                     SelectedItem="{Binding SelectedFlowControl}" />
-                            </StackPanel>
-                        </UniformGrid>
+                                    </StackPanel>
+                                </UniformGrid>
 
-                        <!-- Hata mesajı -->
-                        <TextBlock
+                                <!-- Hata mesajı -->
+                                <TextBlock
                             MinHeight="22"
                             Margin="8,12,8,0"
                             Foreground="#EF4444"
                             TextWrapping="Wrap"
                             Text="{Binding ConnectionErrorMessage}" />
 
-                        <!-- Open / Close -->
-                        <ui:Button
+                                <!-- Open / Close -->
+                                <ui:Button
                             MinWidth="160"
                             Height="42"
                             Margin="8,12,8,0"
@@ -238,48 +242,48 @@
                             Appearance="Primary"
                             Command="{Binding ToggleConnectionCommand}"
                             Content="{Binding OpenCloseButtonText}" />
-                    </StackPanel>
-                </ui:Card>
+                            </StackPanel>
+                        </ui:Card>
 
-                <!-- RX/TX ham trafik alanı -->
-                <ui:Card
+                        <!-- RX/TX ham trafik alanı -->
+                        <ui:Card
     Grid.Row="2"
     Margin="0,20,0,0"
     Padding="22">
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <!-- Başlık ve sayaçlar -->
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                                <!-- Başlık ve sayaçlar -->
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0">
-                                <TextBlock
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock
                     FontSize="20"
                     FontWeight="SemiBold"
                     Text="RX / TX Ham Veri Trafiği" />
 
-                                <TextBlock
+                                        <TextBlock
                     Margin="0,6,0,0"
                   Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                     Text="Seri porttan gönderilen ve alınan ham byte kayıtları." />
-                            </StackPanel>
+                                    </StackPanel>
 
-                            <StackPanel
+                                    <StackPanel
                 Grid.Column="1"
                 Orientation="Horizontal">
 
-                                <!-- RX sayacı -->
-                                <Border
+                                        <!-- RX sayacı -->
+                                        <Border
                     MinWidth="120"
                     Margin="0,0,8,0"
                     Padding="14,9"
@@ -288,29 +292,29 @@
                     BorderThickness="1"
                     CornerRadius="8">
 
-                                    <StackPanel
+                                            <StackPanel
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
 
-                                        <TextBlock
+                                                <TextBlock
                             Margin="0,0,8,0"
                             FontWeight="SemiBold"
                             Foreground="#4ADE80"
                             Text="RX" />
 
-                                        <TextBlock
+                                                <TextBlock
                             FontWeight="SemiBold"
                             Text="{Binding ReceivedByteCount}" />
 
-                                        <TextBlock
+                                                <TextBlock
                             Margin="4,0,0,0"
                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                             Text="byte" />
-                                    </StackPanel>
-                                </Border>
+                                            </StackPanel>
+                                        </Border>
 
-                                <!-- TX sayacı -->
-                                <Border
+                                        <!-- TX sayacı -->
+                                        <Border
                     MinWidth="120"
                     Padding="14,9"
                     Background="#183B82F6"
@@ -318,191 +322,191 @@
                     BorderThickness="1"
                     CornerRadius="8">
 
-                                    <StackPanel
+                                            <StackPanel
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
 
-                                        <TextBlock
+                                                <TextBlock
                             Margin="0,0,8,0"
                             FontWeight="SemiBold"
                             Foreground="#60A5FA"
                             Text="TX" />
 
-                                        <TextBlock
+                                                <TextBlock
                             FontWeight="SemiBold"
                             Text="{Binding SentByteCount}" />
 
-                                        <TextBlock
+                                                <TextBlock
                             Margin="4,0,0,0"
                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                             Text="byte" />
+                                            </StackPanel>
+                                        </Border>
                                     </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </Grid>
+                                </Grid>
 
-                        <!-- Veri gönderim paneli -->
-                        <Grid
+                                <!-- Veri gönderim paneli -->
+                                <Grid
     Grid.Row="1"
     Margin="0,20,0,14">
 
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                            <!-- Mod, encoding, satır sonu ve checksum seçimi -->
-                            <StackPanel
+                                    <!-- Mod, encoding, satır sonu ve checksum seçimi -->
+                                    <StackPanel
     Grid.Row="0"
     Orientation="Horizontal">
 
-                                <!-- Gönderim modu -->
-                                <StackPanel
+                                        <!-- Gönderim modu -->
+                                        <StackPanel
         Width="190"
         Margin="0,0,12,0">
 
-                                    <TextBlock
+                                            <TextBlock
             Margin="0,0,0,6"
             FontWeight="SemiBold"
             Text="Gönderim Modu" />
 
-                                    <ComboBox
+                                            <ComboBox
             MinHeight="36"
             ItemsSource="{Binding InputModeOptions}"
             SelectedItem="{Binding SelectedInputMode, Mode=TwoWay}" />
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <!-- Encoding -->
-                                <StackPanel
+                                        <!-- Encoding -->
+                                        <StackPanel
         Width="240"
         Margin="0,0,12,0">
 
-                                    <TextBlock
+                                            <TextBlock
             Margin="0,0,0,6"
             FontWeight="SemiBold"
             Text="Encoding" />
 
-                                    <ComboBox
+                                            <ComboBox
             MinHeight="36"
             IsEnabled="{Binding IsEncodingSelectionEnabled}"
             ItemsSource="{Binding TextEncodingOptions}"
             SelectedItem="{Binding SelectedTextEncoding, Mode=TwoWay}" />
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <!-- Satır sonu -->
-                                <StackPanel
+                                        <!-- Satır sonu -->
+                                        <StackPanel
         Width="190"
         Margin="0,0,12,0">
 
-                                    <TextBlock
+                                            <TextBlock
             Margin="0,0,0,6"
             FontWeight="SemiBold"
             Text="Satır Sonu" />
 
-                                    <ComboBox
+                                            <ComboBox
             MinHeight="36"
             IsEnabled="{Binding IsLineEndingSelectionEnabled}"
             ItemsSource="{Binding LineEndingOptions}"
             SelectedItem="{Binding SelectedLineEnding,
                                    Mode=TwoWay,
                                    UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <!-- Checksum / CRC -->
-                                <StackPanel Width="210">
-                                    <TextBlock
+                                        <!-- Checksum / CRC -->
+                                        <StackPanel Width="210">
+                                            <TextBlock
             Margin="0,0,0,6"
             FontWeight="SemiBold"
             Text="Checksum / CRC" />
 
-                                    <ComboBox
+                                            <ComboBox
             MinHeight="36"
             IsEnabled="{Binding IsChecksumSelectionEnabled}"
             ItemsSource="{Binding ChecksumAlgorithmOptions}"
             SelectedItem="{Binding SelectedChecksumAlgorithm,
                                    Mode=TwoWay,
                                    UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
 
 
-                            <!-- Number modu ayarları -->
-                            <StackPanel
+                                    <!-- Number modu ayarları -->
+                                    <StackPanel
                                 Grid.Row="1"
                                 Margin="0,12,0,0"
                                 Orientation="Horizontal">
 
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter
                                             Property="Visibility"
                                             Value="Collapsed" />
 
-                                        <Style.Triggers>
-                                            <DataTrigger
+                                                <Style.Triggers>
+                                                    <DataTrigger
                                                 Binding="{Binding SelectedInputMode}"
                                                 Value="{x:Static domainEnums:DataInputMode.Number}">
-                                                <Setter
+                                                        <Setter
                                                     Property="Visibility"
                                                     Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
 
-                                <!-- Sayısal veri tipi -->
-                                <StackPanel
+                                        <!-- Sayısal veri tipi -->
+                                        <StackPanel
                                     Width="190"
                                     Margin="0,0,12,0">
-                                    <TextBlock
+                                            <TextBlock
                                         Margin="0,0,0,6"
                                         FontWeight="SemiBold"
                                         Text="Sayısal Veri Tipi" />
 
-                                    <ComboBox
+                                            <ComboBox
                                         MinHeight="36"
                                         ItemsSource="{Binding NumericDataTypes}"
                                         SelectedItem="{Binding SelectedNumericDataType,
                                                                Mode=TwoWay,
                                                                UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <!-- Byte sırası -->
-                                <StackPanel Width="190">
-                                    <TextBlock
+                                        <!-- Byte sırası -->
+                                        <StackPanel Width="190">
+                                            <TextBlock
                                         Margin="0,0,0,6"
                                         FontWeight="SemiBold"
                                         Text="Byte Sırası" />
 
-                                    <ComboBox
+                                            <ComboBox
                                         MinHeight="36"
                                         ItemsSource="{Binding ByteOrders}"
                                         SelectedItem="{Binding SelectedByteOrder,
                                                                Mode=TwoWay,
                                                                UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
 
-                            <!-- Kullanıcı girişi ve düğmeler -->
-                            <Grid
+                                    <!-- Kullanıcı girişi ve düğmeler -->
+                                    <Grid
         Grid.Row="2"
         Margin="0,14,0,0">
 
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                <!-- Veri girişi -->
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock
+                                        <!-- Veri girişi -->
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock
                 Margin="0,0,0,6"
                 FontWeight="SemiBold"
                 Text="Gönderilecek Veri" />
 
-                                    <TextBox
+                                            <TextBox
                 MinHeight="74"
                 Padding="10"
                 AcceptsReturn="True"
@@ -513,53 +517,53 @@
                                Mode=TwoWay,
                                UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <TextBlock
+                                            <TextBlock
                 Margin="0,6,0,0"
                 FontSize="12"
                 Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                 TextWrapping="Wrap"
                 Text="Text modunda CR, LF veya CRLF kullanılabilir; HEX ve Binary modlarında isteğe bağlı SUM8 veya CRC-16 Modbus eklenebilir; Number modunda yalnızca sayısal değer girin." />
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <!-- Komut düğmeleri -->
-                                <StackPanel
+                                        <!-- Komut düğmeleri -->
+                                        <StackPanel
             Grid.Column="1"
             Margin="14,25,0,0"
             VerticalAlignment="Top">
 
-                                    <ui:Button
+                                            <ui:Button
                 MinWidth="180"
                 Height="36"
                 Appearance="Primary"
                 Command="{Binding SendCommand}"
                 Content="Gönder" />
 
-                                    <ui:Button
+                                            <ui:Button
                 MinWidth="180"
                 Height="36"
                 Margin="0,10,0,0"
                 Command="{Binding ClearTrafficCommand}"
                 Content="Trafiği Temizle" />
-                                </StackPanel>
-                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
 
-                            <!-- Gönderim hatası -->
-                            <TextBlock
+                                    <!-- Gönderim hatası -->
+                                    <TextBlock
         Grid.Row="3"
         MinHeight="22"
         Margin="0,10,0,0"
         Foreground="#EF4444"
         TextWrapping="Wrap"
         Text="{Binding SendErrorMessage}" />
-                        </Grid>
+                                </Grid>
 
 
 
 
 
 
-                        <!-- Trafik tablosu -->
-                        <DataGrid
+                                <!-- Trafik tablosu -->
+                                <DataGrid
             Grid.Row="2"
             Height="300"
             AutoGenerateColumns="False"
@@ -572,45 +576,688 @@
             ItemsSource="{Binding TrafficRows}"
             SelectionMode="Single">
 
-                            <DataGrid.Columns>
-                                <DataGridTextColumn
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn
                     Width="140"
                     Binding="{Binding TimestampText}"
                     Header="Zaman" />
 
-                                <DataGridTextColumn
+                                        <DataGridTextColumn
                     Width="80"
                     Binding="{Binding DirectionText}"
                     Header="Yön" />
 
-                                <DataGridTextColumn
+                                        <DataGridTextColumn
                     Width="110"
                     Binding="{Binding TransportKind}"
                     Header="Taşıyıcı" />
 
-                                <DataGridTextColumn
+                                        <DataGridTextColumn
                     Width="100"
                     Binding="{Binding ByteCount}"
                     Header="Byte" />
 
-                                <DataGridTextColumn
+                                        <DataGridTextColumn
                     Width="*"
                     Binding="{Binding RawByteText}"
                     Header="Ham Veri" />
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                    </DataGrid.Columns>
+                                </DataGrid>
 
-                        <!-- Bilgilendirme -->
-                        <TextBlock
+                                <!-- Bilgilendirme -->
+                                <TextBlock
             Grid.Row="3"
             Margin="0,10,0,0"
             HorizontalAlignment="Right"
             FontSize="12"
           Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
             Text="En fazla 2.000 trafik satırı bellekte tutulur." />
+                            </Grid>
+                        </ui:Card>
                     </Grid>
-                </ui:Card>
-            </Grid>
-        </ScrollViewer>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="UDP">
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
+
+                    <Grid
+                        MinWidth="920"
+                        Margin="28"
+                        DataContext="{Binding Udp}">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- UDP sayfa başlığı -->
+                        <StackPanel Grid.Row="0">
+                            <TextBlock
+                                FontSize="28"
+                                FontWeight="SemiBold"
+                                Text="UDP Haberleşmesi" />
+
+                            <TextBlock
+                                Margin="0,6,0,0"
+                                FontSize="14"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Yerel dinleme ve uzak hedef adreslerini yapılandırarak UDP datagramları gönderin ve alın." />
+                        </StackPanel>
+
+                        <!-- UDP bağlantı kartı -->
+                        <ui:Card
+                            Grid.Row="1"
+                            Margin="0,24,0,0"
+                            Padding="22">
+
+                            <StackPanel>
+                                <Grid Margin="8,0,8,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Ellipse
+                                        Grid.Column="0"
+                                        Width="12"
+                                        Height="12"
+                                        Margin="0,0,10,0">
+
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter
+                                                    Property="Fill"
+                                                    Value="#808080" />
+
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding ConnectionState}"
+                                                        Value="{x:Static domainEnums:ConnectionState.Connecting}">
+                                                        <Setter
+                                                            Property="Fill"
+                                                            Value="#F59E0B" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                                        Binding="{Binding ConnectionState}"
+                                                        Value="{x:Static domainEnums:ConnectionState.Connected}">
+                                                        <Setter
+                                                            Property="Fill"
+                                                            Value="#22C55E" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                                        Binding="{Binding ConnectionState}"
+                                                        Value="{x:Static domainEnums:ConnectionState.Disconnecting}">
+                                                        <Setter
+                                                            Property="Fill"
+                                                            Value="#F59E0B" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                                        Binding="{Binding ConnectionState}"
+                                                        Value="{x:Static domainEnums:ConnectionState.Faulted}">
+                                                        <Setter
+                                                            Property="Fill"
+                                                            Value="#EF4444" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Text="{Binding ConnectionStatusText}" />
+                                </Grid>
+
+                                <UniformGrid
+                                    Columns="4"
+                                    IsEnabled="{Binding CanEditSettings}">
+
+                                    <StackPanel Margin="8">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            FontWeight="SemiBold"
+                                            Text="Yerel IP" />
+
+                                        <TextBox
+                                            MinHeight="36"
+                                            Text="{Binding LocalIpAddress,
+                                                           Mode=TwoWay,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+
+                                    <StackPanel Margin="8">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            FontWeight="SemiBold"
+                                            Text="Yerel Port" />
+
+                                        <TextBox
+                                            MinHeight="36"
+                                            Text="{Binding LocalPort,
+                                                           Mode=TwoWay,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+
+                                    <StackPanel Margin="8">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            FontWeight="SemiBold"
+                                            Text="Uzak IP" />
+
+                                        <TextBox
+                                            MinHeight="36"
+                                            Text="{Binding RemoteIpAddress,
+                                                           Mode=TwoWay,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+
+                                    <StackPanel Margin="8">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            FontWeight="SemiBold"
+                                            Text="Uzak Port" />
+
+                                        <TextBox
+                                            MinHeight="36"
+                                            Text="{Binding RemotePort,
+                                                           Mode=TwoWay,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <TextBlock
+                                    MinHeight="22"
+                                    Margin="8,12,8,0"
+                                    Foreground="#EF4444"
+                                    Text="{Binding ConnectionErrorMessage}"
+                                    TextWrapping="Wrap" />
+
+                                <ui:Button
+                                    MinWidth="180"
+                                    Height="42"
+                                    Margin="8,12,8,0"
+                                    HorizontalAlignment="Right"
+                                    Appearance="Primary"
+                                    Command="{Binding ToggleConnectionCommand}"
+                                    Content="{Binding OpenCloseButtonText}" />
+                            </StackPanel>
+                        </ui:Card>
+
+                        <!-- UDP RX/TX trafik kartı -->
+                        <ui:Card
+                            Grid.Row="2"
+                            Margin="0,20,0,0"
+                            Padding="22">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock
+                                            FontSize="20"
+                                            FontWeight="SemiBold"
+                                            Text="UDP RX / TX Trafiği" />
+
+                                        <TextBlock
+                                            Margin="0,6,0,0"
+                                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="Gönderilen ve alınan UDP datagramlarının ham byte kayıtları." />
+                                    </StackPanel>
+
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        Orientation="Horizontal">
+
+                                        <Border
+                                            MinWidth="120"
+                                            Margin="0,0,8,0"
+                                            Padding="14,9"
+                                            Background="#1822C55E"
+                                            BorderBrush="#5522C55E"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+
+                                            <StackPanel
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+
+                                                <TextBlock
+                                                    Margin="0,0,8,0"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="#4ADE80"
+                                                    Text="RX" />
+
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding ReceivedByteCount}" />
+
+                                                <TextBlock
+                                                    Margin="4,0,0,0"
+                                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="byte" />
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border
+                                            MinWidth="120"
+                                            Padding="14,9"
+                                            Background="#183B82F6"
+                                            BorderBrush="#553B82F6"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+
+                                            <StackPanel
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+
+                                                <TextBlock
+                                                    Margin="0,0,8,0"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="#60A5FA"
+                                                    Text="TX" />
+
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding SentByteCount}" />
+
+                                                <TextBlock
+                                                    Margin="4,0,0,0"
+                                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="byte" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- UDP gönderim paneli -->
+                                <Grid
+                                    Grid.Row="1"
+                                    Margin="0,20,0,14">
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel
+                                        Grid.Row="0"
+                                        Orientation="Horizontal">
+
+                                        <StackPanel
+                                            Width="190"
+                                            Margin="0,0,12,0">
+
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Gönderim Modu" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                ItemsSource="{Binding InputModeOptions}"
+                                                SelectedItem="{Binding SelectedInputMode,
+                                                                       Mode=TwoWay}" />
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            Width="220"
+                                            Margin="0,0,12,0">
+
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Encoding" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                IsEnabled="{Binding IsEncodingSelectionEnabled}"
+                                                ItemsSource="{Binding TextEncodingOptions}"
+                                                SelectedItem="{Binding SelectedTextEncoding,
+                                                                       Mode=TwoWay}" />
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            Width="180"
+                                            Margin="0,0,12,0">
+
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Satır Sonu" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                IsEnabled="{Binding IsLineEndingSelectionEnabled}"
+                                                ItemsSource="{Binding LineEndingOptions}"
+                                                SelectedItem="{Binding SelectedLineEnding,
+                                                                       Mode=TwoWay,
+                                                                       UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+
+                                        <StackPanel Width="210">
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Checksum / CRC" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                IsEnabled="{Binding IsChecksumSelectionEnabled}"
+                                                ItemsSource="{Binding ChecksumAlgorithmOptions}"
+                                                SelectedItem="{Binding SelectedChecksumAlgorithm,
+                                                                       Mode=TwoWay,
+                                                                       UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel
+                                        Grid.Row="1"
+                                        Margin="0,12,0,0"
+                                        Orientation="Horizontal">
+
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter
+                                                    Property="Visibility"
+                                                    Value="Collapsed" />
+
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding SelectedInputMode}"
+                                                        Value="{x:Static domainEnums:DataInputMode.Number}">
+                                                        <Setter
+                                                            Property="Visibility"
+                                                            Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+
+                                        <StackPanel
+                                            Width="190"
+                                            Margin="0,0,12,0">
+
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Sayısal Veri Tipi" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                ItemsSource="{Binding NumericDataTypes}"
+                                                SelectedItem="{Binding SelectedNumericDataType,
+                                                                       Mode=TwoWay,
+                                                                       UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+
+                                        <StackPanel Width="190">
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Byte Sırası" />
+
+                                            <ComboBox
+                                                MinHeight="36"
+                                                ItemsSource="{Binding ByteOrders}"
+                                                SelectedItem="{Binding SelectedByteOrder,
+                                                                       Mode=TwoWay,
+                                                                       UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <Grid
+                                        Grid.Row="2"
+                                        Margin="0,14,0,0">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock
+                                                Margin="0,0,0,6"
+                                                FontWeight="SemiBold"
+                                                Text="Gönderilecek Datagram" />
+
+                                            <TextBox
+                                                MinHeight="74"
+                                                Padding="10"
+                                                AcceptsReturn="True"
+                                                Text="{Binding SendInput,
+                                                               Mode=TwoWay,
+                                                               UpdateSourceTrigger=PropertyChanged}"
+                                                TextWrapping="Wrap"
+                                                VerticalContentAlignment="Top"
+                                                VerticalScrollBarVisibility="Auto" />
+
+                                            <TextBlock
+                                                Margin="0,6,0,0"
+                                                FontSize="12"
+                                                Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                                Text="Text, HEX, Binary ve IEEE 754 verileri UDP datagramı olarak gönderilebilir."
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Margin="14,25,0,0"
+                                            VerticalAlignment="Top">
+
+                                            <ui:Button
+                                                MinWidth="180"
+                                                Height="36"
+                                                Appearance="Primary"
+                                                Command="{Binding SendCommand}"
+                                                Content="Datagram Gönder" />
+
+                                            <ui:Button
+                                                MinWidth="180"
+                                                Height="36"
+                                                Margin="0,10,0,0"
+                                                Command="{Binding ClearTrafficCommand}"
+                                                Content="Trafiği Temizle" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        MinHeight="22"
+                                        Margin="0,10,0,0"
+                                        Foreground="#EF4444"
+                                        Text="{Binding SendErrorMessage}"
+                                        TextWrapping="Wrap" />
+                                </Grid>
+
+                                <!-- UDP trafik tablosu: WPF-UI DataGrid metin
+                                     kırpmasını önlemek için standart kontroller. -->
+                                <Border
+                                    Grid.Row="2"
+                                    Height="300"
+                                    Margin="0,8,0,0"
+                                    Background="#08000000"
+                                    BorderBrush="#33FFFFFF"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="42" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+
+                                        <Border
+                                            Grid.Row="0"
+                                            Background="#12FFFFFF"
+                                            BorderBrush="#33FFFFFF"
+                                            BorderThickness="0,0,0,1">
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="150" />
+                                                    <ColumnDefinition Width="90" />
+                                                    <ColumnDefinition Width="120" />
+                                                    <ColumnDefinition Width="90" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    Margin="12,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                    Text="Zaman" />
+
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    Margin="12,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                    Text="Yön" />
+
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Margin="12,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                    Text="Taşıyıcı" />
+
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Margin="12,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                    Text="Byte" />
+
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Margin="12,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                    Text="Ham Veri" />
+                                            </Grid>
+                                        </Border>
+
+                                        <ScrollViewer
+                                            Grid.Row="1"
+                                            HorizontalScrollBarVisibility="Disabled"
+                                            VerticalScrollBarVisibility="Auto">
+
+                                            <ItemsControl
+                                                HorizontalContentAlignment="Stretch"
+                                                ItemsSource="{Binding TrafficRows}">
+
+                                                <ItemsControl.ItemContainerStyle>
+                                                    <Style TargetType="ContentPresenter">
+                                                        <Setter
+                                                            Property="HorizontalAlignment"
+                                                            Value="Stretch" />
+                                                    </Style>
+                                                </ItemsControl.ItemContainerStyle>
+
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border
+                                                            MinHeight="40"
+                                                            BorderBrush="#22FFFFFF"
+                                                            BorderThickness="0,0,0,1">
+
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="150" />
+                                                                    <ColumnDefinition Width="90" />
+                                                                    <ColumnDefinition Width="120" />
+                                                                    <ColumnDefinition Width="90" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <TextBlock
+                                                                    Grid.Column="0"
+                                                                    Margin="12,0"
+                                                                    VerticalAlignment="Center"
+                                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                                    Text="{Binding TimestampText}" />
+
+                                                                <TextBlock
+                                                                    Grid.Column="1"
+                                                                    Margin="12,0"
+                                                                    VerticalAlignment="Center"
+                                                                    FontWeight="SemiBold"
+                                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                                    Text="{Binding DirectionText}" />
+
+                                                                <TextBlock
+                                                                    Grid.Column="2"
+                                                                    Margin="12,0"
+                                                                    VerticalAlignment="Center"
+                                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                                    Text="{Binding TransportKind}" />
+
+                                                                <TextBlock
+                                                                    Grid.Column="3"
+                                                                    Margin="12,0"
+                                                                    VerticalAlignment="Center"
+                                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                                    Text="{Binding ByteCount}" />
+
+                                                                <TextBlock
+                                                                    Grid.Column="4"
+                                                                    Margin="12,0"
+                                                                    VerticalAlignment="Center"
+                                                                    FontFamily="Consolas"
+                                                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                                                    Text="{Binding RawByteText}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding RawByteText}" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Margin="0,10,0,0"
+                                    HorizontalAlignment="Right"
+                                    FontSize="12"
+                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="En fazla 2.000 UDP trafik satırı bellekte tutulur." />
+                            </Grid>
+                        </ui:Card>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </ui:FluentWindow>

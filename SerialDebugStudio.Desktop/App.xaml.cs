@@ -7,6 +7,7 @@ using SerialDebugStudio.Application.Abstractions.Formatting;
 using SerialDebugStudio.Application.Services.Formatting;
 using SerialDebugStudio.Application.Abstractions.Checksums;
 using SerialDebugStudio.Application.Services.Checksums;
+using SerialDebugStudio.Infrastructure.Transports.Udp;
 
 namespace SerialDebugStudio.Desktop;
 
@@ -40,6 +41,17 @@ public partial class App : System.Windows.Application
 
         builder.Services.AddSingleton<
             MainWindowViewModel>();
+
+        builder.Services.AddSingleton<
+            IUdpTransportFactory,
+            UdpTransportFactory>();
+
+        builder.Services.AddSingleton<
+            UdpViewModel>();
+
+        builder.Services.AddSingleton<
+            MainWindowViewModel>();
+
 
         builder.Services.AddSingleton<
             MainWindow>();

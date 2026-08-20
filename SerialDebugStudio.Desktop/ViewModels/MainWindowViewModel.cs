@@ -38,7 +38,8 @@ public partial class MainWindowViewModel
      ISerialPortDiscoveryService serialPortDiscoveryService,
      ISerialTransportFactory serialTransportFactory,
      IDataConversionService dataConversionService,
-     IChecksumService checksumService)
+     IChecksumService checksumService,
+     UdpViewModel udpViewModel)
     {
         ArgumentNullException.ThrowIfNull(
             serialPortDiscoveryService);
@@ -52,6 +53,9 @@ public partial class MainWindowViewModel
         ArgumentNullException.ThrowIfNull(
             checksumService);
 
+        ArgumentNullException.ThrowIfNull(
+            udpViewModel);
+
         _serialPortDiscoveryService =
             serialPortDiscoveryService;
 
@@ -63,6 +67,9 @@ public partial class MainWindowViewModel
 
         _checksumService =
             checksumService;
+
+        Udp =
+            udpViewModel;
 
         RefreshPorts();
     }
@@ -76,6 +83,11 @@ public partial class MainWindowViewModel
     {
         get;
     } = [];
+
+    public UdpViewModel Udp
+    {
+        get;
+    }
 
     public IReadOnlyList<int> BaudRates
     {
@@ -814,5 +826,6 @@ public partial class MainWindowViewModel
     public async ValueTask DisposeAsync()
     {
         await DisposeCurrentTransportAsync();
+        await Udp.DisposeAsync();
     }
 }
